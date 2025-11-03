@@ -49,7 +49,12 @@ class MatrizAdjacencia:
         return lista
 
     def verificar_se_percurso_existe(self, percurso:list):
-        
+        for i in range(len(percurso)-1):
+                if not self.verificar_aresta_existe(percurso[i], percurso[i+1]):
+                    return False
+        return True
+                
+
 
 if __name__ == "__main__":
     matriza = MatrizAdjacencia(3)
@@ -63,6 +68,7 @@ if __name__ == "__main__":
     print(matriza.matriz)
     matriza.calcular_grau_cada_vertice()
     print(matriza.listar_vizinhos(1))
+    matriza.inserir_aresta(2, 0)
 
-matriz = [[],[],[],[],[],[],[]]
+    print(matriza.verificar_se_percurso_existe((2, 1, 0, 1, 0)))
 

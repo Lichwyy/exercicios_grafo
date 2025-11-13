@@ -69,14 +69,47 @@ class MatrizAdjacencia:
             return True
         return False
     
-    def listar_vizinhos(self, vertice):
+   def listar_vizinhos(self, vertice):
         lista = []
-        vertice_vizinho = 0
-        for j in self.matriz[vertice]:
-            vertice_vizinho +=1
-            if j == 1:
-                lista.append(vertice_vizinho)
+        for indice, valor in enumerate(self.matriz[vertice]):
+            if valor == 1:
+                lista.append(indice)
         return lista
+    
+    def busca_largura(self, vertice_inicial):
+        self.queue.append(vertice_inicial)
+
+        while len(self.queue) > 0:
+            
+            for i in self.listar_vizinhos(self.queue[0]):
+                if i in self.queue or i in self.visitados:
+                    continue
+                self.queue.append(i)
+
+            self.visitados.append(self.queue.pop(0))
+
+        return self.visitados
+    
+    def menor_caminho(self, vertice_inicial, vertice_final):
+        self.queue.append(vertice_inicial)
+        encontrou = False
+        while len(self.queue) > 0:
+            if encontrou == True:
+                break
+            
+            for i in self.listar_vizinhos(self.queue[0]):
+                if i == vertice_final:
+                    self.visitados.append(self.queue.pop(0))
+                    self.visitados.append(i)
+                    encontrou = True
+                    break
+                if i in self.queue or i in self.visitados:
+                    continue
+                self.queue.append(i)
+
+            self.visitados.append(self.queue.pop(0))
+
+        return self.visitados
 
     def verificar_se_percurso_existe(self, percurso:list):
         for i in range(len(percurso)-1):
@@ -115,6 +148,22 @@ if __name__ == "__main__":
     print("\n")
 
     print("Graus dos vértices: ", matriza.grau_vertices_nao_direcionado()) # Mostrando o grau desse grafo não direcionado
+
+    matriz = MatrizAdjacencia(2)
+    
+    matriz_adjacencia = [
+    #   A  B  C  D  E  F
+        [0, 1, 1, 0, 0, 0],  # A
+        [0, 0, 0, 1, 1, 0],  # B
+        [0, 0, 0, 0, 0, 1],  # C
+        [0, 0, 0, 0, 0, 0],  # D
+        [0, 0, 0, 0, 0, 1],  # E
+        [0, 0, 0, 0, 0, 0]   # F
+    ]
+    matriz.matriz = matriz_adjacencia
+    print(matriz.busca_largura(0))
+    
+    print(matriz.menor_caminho(0, 5))
 
 
 

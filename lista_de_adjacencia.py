@@ -29,19 +29,38 @@ def RemoveEdge(grafo, aresta):
         return "Não existe essa aresta no grafo"
     return grafo
 
-def GrauPorVertice(grafo):
-    for x in grafo:
-        temp = len(grafo[x])
-        grafo[x] = temp
+def GrauPorVertice(grafo, dirigido=True):
+    if dirigido:
+        graus = {v: {"entrada": 0, "saida": len(grafo.get(v, []))} for v in grafo}
+        for origem, destinos in grafo.items():
+            for d in destinos:
+                if d in graus:
+                    graus[d]["entrada"] += 1
+                else:
+                    graus[d] = {"entrada": 1, "saida": len(grafo.get(d, []))}
+        return graus
+    else:
+        graus = {}
+        for v in grafo:
+            graus[v] = len(grafo.get(v, []))
+        for origem, destinos in grafo.items():
+            for d in destinos:
+                if d not in graus:
+                    graus[d] = 1
+                else:
+                    pass
+        return graus
 
-    return grafo
-
-def VerificarSeExisteUmaArestaDeUmVerticeProOutro(grafo, aresta):
-    try:
-        grafo[aresta[0]].remove(aresta[1])
+def VerificarSeExisteUmaArestaDeUmVerticeProOutro(grafo, aresta, dirigido=True):
+    origem, destino = aresta
+    lista_origem = grafo.get(origem, [])
+    if destino in lista_origem:
         return True
-    except:
-        return False
+    if not dirigido:
+        lista_destino = grafo.get(destino, [])
+        if origem in lista_destino:
+            return True
+    return False
 
 def ListarTodosOsVizinhosDoVertice(grafo,vertice):
     return grafo[vertice]
@@ -54,6 +73,5 @@ def VerificarPercurso(grafo,percurso):
             return False
 
     return True
-
 
 

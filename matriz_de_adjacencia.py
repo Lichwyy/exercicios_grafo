@@ -69,7 +69,7 @@ class MatrizAdjacencia:
             return True
         return False
     
-   def listar_vizinhos(self, vertice):
+    def listar_vizinhos(self, vertice):
         lista = []
         for indice, valor in enumerate(self.matriz[vertice]):
             if valor == 1:

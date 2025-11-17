@@ -74,4 +74,32 @@ def VerificarPercurso(grafo,percurso):
 
     return True
 
+def busca_em_profundidade(grafo, inicio):
+    visitados = []  
+    pilha = [inicio]   
 
+    while pilha:
+     
+        vertice = pilha.pop()
+        
+        if vertice not in visitados:
+            visitados.append(vertice)
+            
+            for vizinho in reversed(grafo[vertice]):
+                if vizinho not in visitados:
+                    pilha.append(vizinho)
+
+    return visitados
+
+grafo_teste = {
+    "A": ["B", "C"],
+    "B": ["D", "E"],
+    "C": ["F"],
+    "D": [],
+    "E": ["F"],
+    "F": []
+}
+            
+result = busca_em_profundidade(grafo_teste, "A")
+print(result)
+        

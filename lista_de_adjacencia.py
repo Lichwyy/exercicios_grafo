@@ -102,4 +102,41 @@ grafo_teste = {
             
 result = busca_em_profundidade(grafo_teste, "A")
 print(result)
+    
+def verificar_ciclo(grafo, inicio):
+    visitados = []
+    pilha = [inicio]
+    aux = {inicio: None}
+
+    while pilha:
+        vertice = pilha.pop()
         
+        if vertice not in visitados:
+            visitados.append(vertice)
+            
+            for vizinho in reversed(grafo[vertice]):
+
+                
+                if vizinho in visitados and aux[vertice] != vizinho:
+                    return True
+
+                
+                if vizinho not in visitados and vizinho not in pilha:
+                    aux[vizinho] = vertice
+                    pilha.append(vizinho)
+    return False
+
+grafo1 = {
+    1: [2],
+    2: [1, 3],
+    3: [2]
+}
+
+grafo2 = {
+    1: [2],
+    2: [1, 3],
+    3: [2, 1]
+}
+
+print(verificar_ciclo(grafo1, 1))  # False
+print(verificar_ciclo(grafo2, 1))  # True

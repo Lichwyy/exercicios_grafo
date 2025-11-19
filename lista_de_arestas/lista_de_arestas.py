@@ -61,3 +61,55 @@ class ListaArestas:
             if not self.verificar_existencia_aresta(vertice_start, vertice_end):
                 return False
         return True
+    
+    def busca_em_profundidade(self, vertice_inicial: str):
+        ordem_visita = []
+        visitados = set()
+        pilha = [vertice_inicial]
+
+        while pilha:
+            vertice_atual = pilha.pop()
+            if vertice_atual not in visitados:
+                visitados.add(vertice_atual)
+                ordem_visita.append(vertice_atual)
+                vizinhos = []
+
+                for _, node in self.df.iterrows():
+                    if node['start'] == vertice_atual and node['end'] not in visitados:
+                        vizinhos.append(node['end'])
+
+                pilha.extend(reversed(vizinhos))
+        return ordem_visita
+
+    def busca_em_profundidade_detectar_ciclos(self, vertice_inicial: str):
+        ordem_visita = []
+        visitados = set()
+        pilha = [(vertice_inicial, None)]
+        ciclo = False
+
+        while pilha:
+            vertice_atual, pai = pilha.pop()
+            if vertice_atual not in visitados:
+                visitados.add(vertice_atual)
+                ordem_visita.append(vertice_atual)
+                vizinhos = []
+
+                for _, node in self.df.iterrows():
+                    if node['start'] == vertice_atual:
+                        vizinho = node['end']
+                        
+                        if vizinho == pai:
+                            continue
+                        
+                        if vizinho in visitados:
+                            ciclo = True
+                        elif vizinho not in pilha:
+                            vizinhos.append(vizinho)
+
+                for vizinho in reversed(vizinhos):
+                    pilha.append((vizinho, vertice_atual))
+
+        if ciclo:
+            print(f"Ciclo: {ciclo}")
+
+        return ordem_visita

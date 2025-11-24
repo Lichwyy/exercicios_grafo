@@ -76,46 +76,54 @@ class MatrizAdjacencia:
                 lista.append(indice)
         return lista
     
-    def busca_largura(self, vertice_inicial):
-        self.queue.append(vertice_inicial)
-
-        while len(self.queue) > 0:
-            
-            for i in self.listar_vizinhos(self.queue[0]):
-                if i in self.queue or i in self.visitados:
-                    continue
-                self.queue.append(i)
-
-            self.visitados.append(self.queue.pop(0))
-
-        return self.visitados
-    
-    def menor_caminho(self, vertice_inicial, vertice_final):
-        self.queue.append(vertice_inicial)
-        encontrou = False
-        while len(self.queue) > 0:
-            if encontrou == True:
-                break
-            
-            for i in self.listar_vizinhos(self.queue[0]):
-                if i == vertice_final:
-                    self.visitados.append(self.queue.pop(0))
-                    self.visitados.append(i)
-                    encontrou = True
-                    break
-                if i in self.queue or i in self.visitados:
-                    continue
-                self.queue.append(i)
-
-            self.visitados.append(self.queue.pop(0))
-
-        return self.visitados
 
     def verificar_se_percurso_existe(self, percurso:list):
         for i in range(len(percurso)-1):
                 if not self.verificar_aresta_existe(percurso[i], percurso[i+1]):
                     return False
         return True
+    
+    def busca_profundidade(self, vertice_inicial):
+        lista_visitados = []
+        pilha = []
+        pilha.append(vertice_inicial)
+        encontrado = False
+        while len(pilha) > 0:
+            atual = pilha.pop()
+            if(atual in lista_visitados or atual in pilha):
+                continue
+
+            lista_visitados.append(atual)
+            
+            for i in self.listar_vizinhos(atual):
+                pilha.append(i)
+        return lista_visitados
+
+    def ciclo_det(self, vertice_inicial):
+        visitados = set() 
+        estrutura = {
+            vertice_inicial: None
+        }
+        pilha = [vertice_inicial]
+        while pilha:
+            vertice_atual = pilha.pop()
+            visitados.add(vertice_atual)
+            for vizinho in self.listar_vizinhos(vertice_atual):
+                if vizinho in pilha or vizinho in visitados: 
+                    if not(estrutura[vertice_atual] == vizinho):
+                        ciclo = [vertice_atual]
+                        caminho = vertice_atual
+                        while caminho != vizinho and caminho != None:
+                            caminho = estrutura[caminho]
+                            if caminho != None:
+                                ciclo.append(caminho)
+                        ciclo.reverse()
+                        ciclo.append(vizinho)
+                        return True, ciclo
+                else:
+                    pilha.append(vizinho)
+                    estrutura[vizinho] = vertice_atual
+        return False, []
                 
 
 
@@ -161,9 +169,37 @@ if __name__ == "__main__":
         [0, 0, 0, 0, 0, 0]   # F
     ]
     matriz.matriz = matriz_adjacencia
-    print(matriz.busca_largura(0))
+
+
+    matriz_adjacencia_sem_ciclo = [ # A->C->F->E->B
+    #   A  B  C  D  E  F
+        [0, 1, 1, 0, 0, 0],  # A
+        [1, 0, 0, 0, 0, 0],  # B
+        [1, 0, 0, 0, 0, 1],  # C
+        [0, 0, 0, 0, 0, 0],  # D
+        [0, 0, 0, 0, 0, 1],  # E
+        [0, 0, 1, 0, 1, 0]   # F
+    ]
     
-    print(matriz.menor_caminho(0, 5))
+    matriz_adjacencia_com_ciclo = [ # A->D->E->C->B->F
+    #   A  B  C  D  E  F
+        [0, 1, 0, 1, 0, 0],  # A
+        [1, 0, 1, 0, 0, 1],  # B
+        [0, 1, 0, 1, 0, 0],  # C
+        [1, 0, 1, 0, 1, 0],  # D
+        [0, 0, 0, 1, 0, 0],  # E
+        [0, 1, 0, 0, 0, 0]   # F
+    ]
+
+    print("\n")
+    matriz.matriz = matriz_adjacencia_sem_ciclo
+    print("Busca por profundidade: ", matriz.busca_profundidade(0))
+    print("Não há ciclos, portanto:", matriz.ciclo_det(0))
+
+    matriz.matriz = matriz_adjacencia_com_ciclo
+
+    print("Busca por profundidade: ", matriz.busca_profundidade(0))
+    print("Aqui há ciclo, portanto: ",matriz.ciclo_det(0)) # A->D->C->B (Aí fica: 0, 3, 2, 1 porque são os indices deles)
 
 
 
